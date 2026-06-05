@@ -309,6 +309,19 @@ input[readonly],textarea[readonly]{
   gap:18px;
 }
 .hero-panel{padding:20px 22px}
+/* 横長モード: Today Commandの下に全幅で展開 */
+.hero-panel.wide .hero-head{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:20px 28px;
+  align-items:start;
+}
+.hero-panel.wide .id-block{
+  max-width:340px;
+}
+.hero-panel.wide .hero-stats{
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+}
 .hero-head{
   display:flex;
   justify-content:space-between;
@@ -498,19 +511,13 @@ label[for="templateFiles"] {
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:10px;
 }
-.main-grid{
-  display:grid;
-  grid-template-columns:1.4fr 1fr;
-  gap:18px;
-  align-items:start;
+/* left-pane内のmini-gridは1列で折り返す */
+.left-pane .mini-grid{
+  grid-template-columns:1fr;
 }
-.main-grid>#nixieClockPanel{
-  grid-column:1;
-}
-.main-grid>.side-stack{
-  grid-column:2;
-  grid-row:1 / span 2;
-}
+.left-pane .mini-box b{font-size:1rem}
+.left-pane .mini-box p{display:inline;margin-left:8px}
+/* main-grid: 廃止→ two-col-grid.entry-row を使用 */
 .master-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -535,6 +542,15 @@ label[for="templateFiles"] {
 }
 .side-stack #aiBrushupPanel #aiBrushupResult{
   min-height:160px;
+  resize:vertical;
+}
+.right-stack{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.right-stack #aiBrushupResult{
+  min-height:120px;
   resize:vertical;
 }
 .auto-grid{
@@ -756,7 +772,8 @@ label[for="templateFiles"] {
   font-size:.86rem;
 }
 @media (max-width:1240px){
-  .hero-grid,.main-grid,.dual-grid,.parameter-wrap{grid-template-columns:1fr}
+  .hero-grid,.main-grid,.dual-grid,.parameter-wrap,
+  .two-col-grid,.two-col-grid.tc-row,.two-col-grid.entry-row{grid-template-columns:1fr}
   .main-grid>#nixieClockPanel,.main-grid>.side-stack{grid-column:auto;grid-row:auto}
 }
 @media (max-width:860px){
@@ -826,7 +843,8 @@ label[for="templateFiles"] {
   /* 全グリッドを各1カラム（hero-stats は除外） */
   .hero-grid,.main-grid,.dual-grid,.parameter-wrap,
   .master-grid,.auto-grid,.action-grid,.summary-grid,
-  .mini-grid,.task-sub-grid,
+  .mini-grid,.task-sub-grid,.two-col-grid,
+  .two-col-grid.tc-row,.two-col-grid.entry-row,
   .table-head,.table-row,.template-row,.alert-item,
   .schedule-card,.param-side{
     grid-template-columns:1fr !important;
@@ -1300,207 +1318,242 @@ label[for="templateFiles"] {
   gap:14px;
 }
 @media(max-width:680px){.sender-info-grid{grid-template-columns:1fr}}
+
+/* ── Round 3→4: 統一2列グリッド ── */
+/* 全パネル行のコンテナ */
+.two-col-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  align-items:start;
+}
+/* Today Command + DualUI 行: TC広め */
+.two-col-grid.tc-row{
+  grid-template-columns:1fr 380px;
+}
+/* Entry Console + 右スタック: EC広め */
+.two-col-grid.entry-row{
+  grid-template-columns:1.4fr 1fr;
+}
+@media(max-width:1100px){
+  .two-col-grid,.two-col-grid.tc-row,.two-col-grid.entry-row{
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media(max-width:860px){
+  .two-col-grid,.two-col-grid.tc-row,.two-col-grid.entry-row{
+    grid-template-columns:1fr;
+  }
+}
+
+/* Exception Queue スタイル */
+.eq-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px 14px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--line1);
+  align-items:center;
+}
+.eq-item:last-child{border-bottom:none}
+.eq-tag{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.06em;
+  background:var(--muted);
+  color:var(--bg);
+}
+.eq-tag.critical{background:var(--danger);color:#fff}
+.eq-tag.warning{background:var(--warn);color:#1a1400}
+.eq-tag.info{background:var(--cyan);color:#0a1a18}
+.eq-no{font-size:.8rem;color:var(--muted);margin-top:4px}
+.eq-item-body strong{font-size:.95rem}
+.eq-item-body p{font-size:.84rem;color:var(--muted);margin-top:2px}
+.sev-critical{border-left:3px solid var(--danger)}
+.sev-warning{border-left:3px solid var(--warn)}
+.sev-info{border-left:3px solid var(--cyan)}
+
+/* Mail Template スタイル */
+.mail-tab-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:14px;
+}
+.mail-tab{
+  padding:5px 12px;
+  border-radius:4px;
+  font-size:.82rem;
+  cursor:pointer;
+  background:var(--panel2);
+  color:var(--muted);
+  border:1px solid var(--line1);
+  transition:background 150ms,color 150ms;
+}
+.mail-tab:hover{background:var(--line2);color:var(--text-strong)}
+.mail-tab.active{
+  background:var(--green);
+  color:var(--bg);
+  border-color:var(--green);
+  font-weight:700;
+}
+.mail-select-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+@media(max-width:860px){.mail-select-row{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.mail-select-row{grid-template-columns:1fr}}
+.mail-missing-warn{
+  padding:8px 12px;
+  background:color-mix(in srgb, var(--warn) 15%, transparent);
+  border:1px solid var(--warn);
+  border-radius:6px;
+  font-size:.88rem;
+  color:var(--warn);
+  margin-bottom:10px;
+  display:none;
+}
+.mail-preview{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+.mail-subject-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.mail-subject-row input{flex:1;min-width:0}
+.gas-brushup-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:10px 14px;
+  background:color-mix(in srgb,var(--cyan) 8%,transparent);
+  border:1px solid color-mix(in srgb,var(--cyan) 30%,transparent);
+  border-radius:6px;
+}
+.gas-brushup-row label{font-size:.88rem;color:var(--cyan);flex:1}
+.gas-status{font-size:.83rem;color:var(--muted);margin-top:6px;display:none}
+
+/* Today Command カード: チェック付き折りたたみ */
+.tc-card{transition:all 200ms ease}
+.tc-card.done{
+  border-left-color:var(--line2) !important;
+  background:color-mix(in srgb, var(--panel2) 80%, transparent);
+  opacity:.65;
+}
+.tc-card.done .tc-action,.tc-card.done .tc-reason,.tc-card.done .tc-btns{display:none}
+.tc-card-check-row{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.tc-check{
+  width:18px;height:18px;border-radius:4px;
+  border:2px solid var(--line2);
+  background:var(--button-bg);
+  cursor:pointer;
+  accent-color:var(--green);
+  flex-shrink:0;
+}
+.tc-check:checked{accent-color:var(--green)}
+.tc-done-label{font-size:.78rem;color:var(--muted);font-style:italic;display:none}
+.tc-card.done .tc-done-label{display:inline}
+.tc-expand-hint{font-size:.74rem;color:var(--cyan);cursor:pointer;display:none;margin-left:auto}
+.tc-card.done .tc-expand-hint{display:inline}
+
+/* Deadline Alert チェック付き折りたたみ */
+.alert-item.done{opacity:.5;cursor:pointer}
+.alert-item.done .alert-body{display:none}
+.alert-item.done .alert-meta{display:none}
+.alert-check{
+  width:16px;height:16px;border-radius:3px;
+  border:2px solid var(--line2);
+  background:var(--button-bg);
+  cursor:pointer;
+  accent-color:var(--green);
+  flex-shrink:0;
+}
+.alert-check:checked{accent-color:var(--green)}
+.alert-item-tag-wrap{display:flex;align-items:center;gap:6px}
+
+/* Mail Template: タブ型用途選択 */
+.mail-purpose-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:10px 0 6px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:12px;
+}
+.mail-tab{
+  padding:5px 12px;
+  border-radius:8px;
+  border:1px solid var(--line2);
+  background:var(--button-bg);
+  color:var(--text);
+  font-size:.8rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:background 120ms,border-color 120ms,color 120ms;
+  white-space:nowrap;
+}
+.mail-tab:hover{background:var(--panel3);border-color:var(--cyan)}
+.mail-tab.active{
+  background:color-mix(in srgb, var(--green) 15%, var(--panel2));
+  border-color:var(--green);
+  color:var(--green);
+}
+[data-theme="light"] .mail-tab.active{background:var(--button-primary-bg);color:#fff;border-color:var(--button-primary-bg)}
+
+/* GAS ブラッシュアップ */
+.gas-brushup-wrap{
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  margin-top:4px;
+}
+.gas-brushup-head{
+  padding:10px 14px;
+  background:var(--panel2);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.gas-brushup-head .small-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--cyan)}
+.gas-brushup-textarea{
+  width:100%;min-height:200px;padding:12px 14px;
+  font-size:.9rem;line-height:1.7;
+  background:var(--panel2);border:none;
+  color:var(--text-strong);resize:vertical;
+}
+.gas-brushup-textarea:focus{outline:none}
+.gas-spinner{
+  display:none;
+  width:16px;height:16px;
+  border:2px solid var(--line2);
+  border-top-color:var(--cyan);
+  border-radius:50%;
+  animation:spin 700ms linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <canvas id="bgCodeCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 <div class="scanline"></div>
 <div class="wrap">
-  <!-- =====================================================
-    SENDER INFO PANEL（差出人情報入力）
-    ===================================================== -->
-  <section class="panel" id="senderInfoSection">
-    <div class="corner-label">Sender Info</div>
-    <div class="panel-head">
-      <div>
-        <h2>差出人情報</h2>
-        <p>メールの冒頭「○○の○○でございます。」と末尾のシグネチャーに反映されます。入力後は自動保存されます。</p>
-      </div>
-    </div>
-    <div class="sender-info-grid">
-      <div class="field">
-        <label>所属・部署名</label>
-        <input type="text" id="senderOrg" placeholder="例：静岡がんセンター 臨床研究支援センター" />
-      </div>
-      <div class="field">
-        <label>担当者名</label>
-        <input type="text" id="senderName" placeholder="例：森川 太郎" />
-      </div>
-      <div class="field" style="grid-column:1/-1">
-        <label>シグネチャー（＊＊＊に挟まれた部分のみ入力）</label>
-        <textarea id="senderSignature" rows="6" style="min-height:120px" placeholder="例：静岡がんセンター 臨床研究支援センター&#10;臨床研究管理・調整室&#10;森川 太郎&#10;TEL: 055-989-XXXX&#10;Email: t.morikawa@scchr.jp"></textarea>
-      </div>
-    </div>
-  </section>
 
-
-
-<!-- =====================================================
-  TODAY COMMAND SECTION (最上部追加パネル)
-  ===================================================== -->
-  <div class="tc-qo-grid">
-  <section class="panel" id="todayCommandSection">
-    <div class="corner-label">Today Command</div>
-    <div class="panel-head">
-      <div>
-        <h2>Today Command</h2>
-        <p>本日優先すべきアクションを自動判定して表示します。CSVを読み込むと更新されます。</p>
-      </div>
-      <div class="panel-nav-actions">
-        <a class="btn small manual-btn" href="#exceptionQueueSection">Exception Queue</a>
-        <a class="btn small manual-btn" href="#mailTemplateSection">Mail Template</a>
-        <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
-      </div>
-    </div>
-    <div class="today-command-grid" id="todayCommandList">
-      <div class="tc-empty">
-        <i class="tc-empty-icon">&#9881;</i>
-        CSVを読み込むか、新規DBを作成すると本日のアクション候補がここに表示されます。
-      </div>
-    </div>
-  </section>
-
-
-  <section class="panel command-panel">
-    <div class="corner-label">Operation Console</div>
-    <div class="panel-head">
-        <div>
-          <h2>Quick Operation</h2>
-          <p>テーマ切替を含む主要操作を右上に集約しています。</p>
-        </div>
-      </div>
-    <button class="btn" id="themeBtn">表示テーマ切替</button>
-    <div class="file-pick">
-  <label for="csvFile" class="btn">CSV 選択</label>
-  <input id="csvFile" type="file" accept=".csv,text/csv">
-  <input id="csvFileName" value="" readonly placeholder="ファイル未選択">
-</div>
-    <div class="action-grid">
-        <button class="btn" id="newDbBtn">新規DB作成</button>
-        <button class="btn" id="dummyDataBtn" onclick="loadDummyData()">ダミーデータ読込</button>
-        <button class="btn primary" id="openConfirmBtn" style="grid-column:1/-1">入力画面に進む</button>
-      </div>
-    <select class="btn" id="recordSelect" disabled>
-        <option value="">Noを選択して表示</option>
-      </select>
-    <div class="mini-grid">
-        <div class="mini-box"><span>Database</span><b id="miniDbState">CSV未読込</b><p id="miniDbText">CSVまたは新規DBを選択してください</p></div>
-        <div class="mini-box"><span>Next</span><b id="miniNext">-</b><p>次回採番候補</p></div>
-        <div class="mini-box"><span>Year Count</span><b id="miniYearCount">0</b><p>当年度登録件数</p></div>
-      </div>
-    </section>
-  </div><!-- /tc-qo-grid -->
-
-    <!-- =====================================================
-    EXCEPTION QUEUE SECTION
-    ===================================================== -->
-  <section class="panel" id="exceptionQueueSection">
-    <div class="corner-label">Exception Queue</div>
-    <div class="panel-head">
-      <div>
-        <h2>Exception Queue</h2>
-        <p>データ不備・期限超過・必須項目欠落を自動検出します。</p>
-      </div>
-      <div class="panel-nav-actions">
-        <a class="btn small manual-btn" href="#todayCommandSection">Today Command</a>
-        <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
-      </div>
-    </div>
-    <div class="eq-grid" id="exceptionQueueList">
-      <div class="alert-item">
-        <div><span class="alert-tag">WAIT</span></div>
-        <div><strong>例外検出待機中</strong><p>CSVを読み込むか、新規DBを作成すると例外がここに表示されます。</p></div>
-        <div class="mono">No data</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================
-    MAIL TEMPLATE SECTION
-    ===================================================== -->
-  <section class="panel" id="mailTemplateSection">
-    <div class="corner-label">Mail Template</div>
-    <div class="panel-head">
-      <div>
-        <h2>Mail Template</h2>
-        <p>宛先・用途を選ぶと件名・本文を自動生成します。Today Commandの「メール作成」から自動選択されます。</p>
-      </div>
-      <div class="panel-nav-actions">
-        <a class="btn small manual-btn" href="#todayCommandSection">Today Command</a>
-        <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
-      </div>
-    </div>
-    <div class="mail-panel-grid">
-      <div class="mail-controls">
-        <div class="field">
-          <label>対象No</label>
-          <select id="mailRecordSelect">
-            <option value="">Noを選択してください</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>宛先</label>
-          <select id="mailRecipient">
-            <option value="speaker">講師向け</option>
-            <option value="cohost">関係者向け</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>用途</label>
-          <select id="mailPurpose">
-            <optgroup label="--- 講師向け ---">
-              <option value="ishi_req">【依頼状送付】(講師)開催5週間前</option>
-              <option value="hp_report_speaker">【HP掲載報告+資料依頼】(講師)HP掲載当日</option>
-              <option value="data_reminder_speaker">【資料提出リマインド】(講師)開催2週間前</option>
-              <option value="honban_reminder_speaker">【本番前リマインド】(講師)開催1週間前</option>
-              <option value="shakin_transfer">【謝金振込通知】(講師)開催7日以内</option>
-            </optgroup>
-            <optgroup label="--- 関係者向け ---">
-              <option value="hp_upload_req">【HP予約投稿依頼】(関係者)HP掲載1週間前</option>
-              <option value="hp_done_report">【HP掲載完了報告】(関係者)HP掲載1週間前</option>
-              <option value="hp_done_report_day">【HP掲載完了報告】(関係者)HP掲載当日</option>
-              <option value="denshi_post_req">【電子カルテ掲載依頼】(関係者)HP掲載当日</option>
-              <option value="denshi_replace_req">【電子カルテ差替依頼】(関係者)開催1週間前</option>
-              <option value="shakin_proc_req">【謝金支払手続依頼】(関係者)開催翌日〜3日</option>
-              <option value="seminar_prep">【研修会準備依頼】(関係者)当日</option>
-              <option value="jikan_gaizangyo">【時間外勤務前申請】(関係者)当日</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="field" style="align-self:end">
-          <button class="btn primary" id="mailGenerateBtn">メール生成</button>
-        </div>
-      </div>
-      <div id="mailMissingWarn" style="display:none" class="mail-missing-warn">
-        <strong>必須項目が不足しています</strong>
-        <span id="mailMissingList"></span>
-        &nbsp;&mdash;&nbsp;<a href="#entryConsoleSection" style="color:var(--danger);text-decoration:underline">Entry Consoleで補完する</a>
-      </div>
-      <div class="mail-preview" id="mailPreviewWrap" style="display:none">
-        <div class="mail-preview-head">
-          <span class="small-label">Preview</span>
-          <div style="display:flex;gap:8px">
-            <button class="btn small" id="mailCopySubjectBtn">件名コピー</button>
-            <button class="btn small primary" id="mailCopyAllBtn">全文コピー</button>
-          </div>
-        </div>
-        <div class="mail-subject-wrap">
-          <span class="mail-subject-label">件名</span>
-          <span class="mail-subject-text" id="mailSubjectDisplay"></span>
-        </div>
-        <textarea class="mail-body-area" id="mailBodyDisplay" readonly></textarea>
-        <div class="mail-footer-btns">
-          <button class="btn small" id="mailCopyBtn2">本文コピー</button>
-          <span style="font-size:.82rem;color:var(--muted);align-self:center">クリックで文面を選択・編集できます</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="hero-grid">
-    <section class="hero-panel" id="topControlPanel">
-      <div class="corner-label">Dual Theme Control UI</div>
+  <!-- ===== ROW 0: Dual Theme Control UI (最上部・全幅) ===== -->
+  <section class="hero-panel wide" id="topControlPanel">
+    <div class="corner-label">Dual Theme Control UI</div>
       <div class="hero-head">
         <div class="id-block">
           <div class="kicker">Clinical Research Training Control</div>
@@ -1513,7 +1566,7 @@ label[for="templateFiles"] {
           <div class="stat-box"><span>Records</span><b id="sumAllTop">0</b></div>
           <div class="stat-box"><span>Current Year</span><b id="sumYearTop">0</b></div>
           <div class="stat-box"><span>Next No</span><b id="sumNextTop">-</b></div>
-           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/seminar.html" target="_blank" rel="noopener noreferrer">取扱説明</a>
+          <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/seminar.html" target="_blank" rel="noopener noreferrer">取扱説明</a>
           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/kenshukai-notion-csv-generator.html" target="_blank" rel="noopener noreferrer">申込者管理</a>
           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/attend.html" target="_blank" rel="noopener noreferrer">受講者管理</a>
           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/license.html" target="_blank" rel="noopener noreferrer">受講証交付</a>
@@ -1532,51 +1585,82 @@ label[for="templateFiles"] {
           <a class="btn manual-btn" id="spareBtn5" href="https://example.com" target="_blank" rel="noopener noreferrer" ondblclick="editSpareUrl(5)" title="ダブルクリックでURL・ラベルを編集">予備ボタン5</a>
         </div>
       </div>
-    </section>
-
   </section>
 
-  <section class="dual-grid">
-  <section class="panel">
-    <div class="corner-label">Annual Parameter</div>
+  <!-- ===== ROW 1: Quick Operation + 差出人情報 ===== -->
+  <div class="two-col-grid">
+    <section class="panel command-panel">
+      <div class="corner-label">Operation Console</div>
+      <div class="panel-head">
+        <div>
+          <h2>Quick Operation</h2>
+          <p>CSV操作・新規DB・テーマ切替を一括管理します。</p>
+        </div>
+      </div>
+      <button class="btn" id="themeBtn">表示テーマ切替</button>
+      <div class="file-pick">
+        <label for="csvFile" class="btn">CSV 選択</label>
+        <input id="csvFile" type="file" accept=".csv,text/csv">
+        <input id="csvFileName" value="" readonly placeholder="ファイル未選択">
+      </div>
+      <div class="action-grid">
+        <button class="btn" id="newDbBtn">新規DB作成</button>
+        <button class="btn" id="dummyDataBtn" onclick="loadDummyData()">ダミーデータ読込</button>
+        <button class="btn primary" id="openConfirmBtn" style="grid-column:1/-1">入力画面に進む</button>
+      </div>
+      <select class="btn" id="recordSelect" disabled>
+        <option value="">Noを選択して表示</option>
+      </select>
+      <div class="mini-grid">
+        <div class="mini-box"><span>Database</span><b id="miniDbState">CSV未読込</b><p id="miniDbText">CSVまたは新規DBを選択してください</p></div>
+        <div class="mini-box"><span>Next</span><b id="miniNext">-</b><p>次回採番候補</p></div>
+        <div class="mini-box"><span>Year Count</span><b id="miniYearCount">0</b><p>当年度登録件数</p></div>
+      </div>
+    </section>
+
+    <section class="panel" id="senderInfoSection">
+      <div class="corner-label">Sender Info</div>
+      <div class="panel-head">
+        <div>
+          <h2>差出人情報</h2>
+          <p>メールの冒頭・末尾シグネチャーに自動反映されます。</p>
+        </div>
+      </div>
+      <div class="sender-info-grid">
+        <div class="field">
+          <label>所属・部署名</label>
+          <input type="text" id="senderOrg" placeholder="例：静岡がんセンター 臨床研究支援センター" />
+        </div>
+        <div class="field">
+          <label>担当者名</label>
+          <input type="text" id="senderName" placeholder="例：森川 太郎" />
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>シグネチャー（＊＊＊に挟まれた部分のみ入力）</label>
+          <textarea id="senderSignature" rows="5" style="min-height:100px" placeholder="例：静岡がんセンター 臨床研究支援センター&#10;臨床研究管理・調整室&#10;森川 太郎&#10;TEL: 055-989-XXXX&#10;Email: t.morikawa@scchr.jp"></textarea>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== ROW 2: Today Command (全幅) ===== -->
+  <section class="panel" id="todayCommandSection">
+    <div class="corner-label">Today Command</div>
     <div class="panel-head">
       <div>
-        <h2>Annual Plan Parameter</h2>
-        <p>年間計画の進み具合を、ダーク時はHUD風、ライト時は落ち着いた業務UI風リングで表示します。</p>
+        <h2>Today Command</h2>
+        <p>本日優先すべきアクションを自動判定して表示します。CSVを読み込むと更新されます。</p>
       </div>
-    
-        <div class="panel-nav-actions">
-          <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
-        </div>
+      <div class="panel-nav-actions">
+        <a class="btn small manual-btn" href="#exceptionQueueSection">Exception Queue</a>
+        <a class="btn small manual-btn" href="#mailTemplateSection">Mail Template</a>
+        <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
       </div>
-    <div class="parameter-wrap">
-      <div class="param-gauge">
-        <svg class="param-svg" viewBox="0 0 240 240" aria-hidden="true">
-          <circle cx="120" cy="120" r="92" fill="none" stroke="var(--ring-track)" stroke-width="10"></circle>
-          <circle cx="120" cy="120" r="72" fill="none" stroke="var(--ring-dash)" stroke-width="3" stroke-dasharray="3 7"></circle>
-          <circle cx="120" cy="120" r="92" fill="none" stroke="url(#progressGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="578" stroke-dashoffset="578" id="annualGauge"></circle>
-          <circle cx="120" cy="120" r="108" fill="none" stroke="var(--ring-dots)" stroke-width="1" stroke-dasharray="1 9"></circle>
-          <defs>
-            <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="var(--green2)"></stop>
-              <stop offset="60%" stop-color="var(--green)"></stop>
-              <stop offset="100%" stop-color="var(--cyan)"></stop>
-            </linearGradient>
-          </defs>
-        </svg>
-        <div class="param-core">
-          <div>
-            <small>Progress Ratio</small>
-            <strong id="annualGaugeText">0%</strong>
-            <span id="annualGaugeSub">0 / 0 Completed</span>
-          </div>
-        </div>
-      </div>
-      <div class="param-meta">
-        <div class="param-side"><div><span class="small-label">年度件数</span><p class="radar-note">現在年度に属する登録件数</p></div><b id="paramYearCount">0</b></div>
-        <div class="param-side"><div><span class="small-label">開催済み</span><p class="radar-note">今日より前に開催済みの件数</p></div><b id="paramDoneCount">0</b></div>
-        <div class="param-side"><div><span class="small-label">直近30日</span><p class="radar-note">30日以内に開催予定の件数</p></div><b id="paramSoonCount">0</b></div>
-        <div class="param-side"><div><span class="small-label">追加予定</span><p class="radar-note">現在フォームに保持している保存前データ</p></div><b id="paramDraftCount">0</b></div>
+    </div>
+    <div class="today-command-grid" id="todayCommandList">
+      <div class="tc-empty">
+        <i class="tc-empty-icon">&#9881;</i>
+        CSVを読み込むか、新規DBを作成すると本日のアクション候補がここに表示されます。
       </div>
     </div>
   </section>
@@ -1600,10 +1684,10 @@ label[for="templateFiles"] {
         <div class="mono">No data</div>
       </div>
     </div>
-  </section>
-  </section><!-- /dual-grid: Annual+Deadline -->
+  </section><!-- /Deadline Alert -->
 
-  <section class="main-grid">
+  <!-- ===== ROW 4: Entry Console + 右スタック ===== -->
+  <div class="two-col-grid entry-row">
     <section class="panel" id="entryConsoleSection">
       <div class="corner-label">Entry Console</div>
       <div class="panel-head">
@@ -1684,26 +1768,25 @@ label[for="templateFiles"] {
       <div class="status-box" id="statusBox">CSVを読み込むか、新規データベースを作成すると入力を開始できます。</div>
     </section>
 
-    <!-- Nixie Clock Panel -->
-    <section class="nixie-panel" id="nixieClockPanel">
-      <div class="nixie-date-row">
-        <span class="nixie-digit" id="nixieYear">2026</span>
-        <span class="nixie-sep">/</span>
-        <span class="nixie-digit" id="nixieMonth">01</span>
-        <span class="nixie-sep">/</span>
-        <span class="nixie-digit" id="nixieDay">01</span>
-      </div>
-      <div class="nixie-time-row">
-        <span class="nixie-time-digit" id="nixieHour">00</span>
-        <span class="nixie-colon">:</span>
-        <span class="nixie-time-digit" id="nixieMin">00</span>
-        <span class="nixie-colon">:</span>
-        <span class="nixie-time-digit" id="nixieSec">00</span>
-      </div>
-      <div class="nixie-day-badge" id="nixieDow">月曜日</div>
-    </section>
-
-    <aside class="side-stack">
+    <div class="right-stack">
+      <!-- Nixie Clock Panel -->
+      <section class="nixie-panel" id="nixieClockPanel">
+        <div class="nixie-date-row">
+          <span class="nixie-digit" id="nixieYear">2026</span>
+          <span class="nixie-sep">/</span>
+          <span class="nixie-digit" id="nixieMonth">01</span>
+          <span class="nixie-sep">/</span>
+          <span class="nixie-digit" id="nixieDay">01</span>
+        </div>
+        <div class="nixie-time-row">
+          <span class="nixie-time-digit" id="nixieHour">00</span>
+          <span class="nixie-colon">:</span>
+          <span class="nixie-time-digit" id="nixieMin">00</span>
+          <span class="nixie-colon">:</span>
+          <span class="nixie-time-digit" id="nixieSec">00</span>
+        </div>
+        <div class="nixie-day-badge" id="nixieDow">月曜日</div>
+      </section>
       <!-- AI Brushup Panel -->
       <section class="panel" id="aiBrushupPanel">
         <div class="corner-label">AI Brushup</div>
@@ -1823,12 +1906,134 @@ label[for="templateFiles"] {
         </div>
         <div class="progress-shell"><div class="progress-bar" id="roadmapBar"></div></div>
       </section>
-    </aside>
+    </div>
+  </div><!-- /entry-row -->
+
+  <!-- ===== ROW 5: Exception Queue + Deadline Alert (既存) → ここでExcQを挿入 ===== -->
+  <!-- ExceptionQueueSection -->
+  <section class="panel" id="exceptionQueueSection">
+    <div class="corner-label">Exception Queue</div>
+    <div class="panel-head">
+      <div>
+        <h2>Exception Queue</h2>
+        <p>データの不備・例外をルールベースで自動検出します。CSV読込後に更新されます。</p>
+      </div>
+      <div class="panel-nav-actions">
+        <a class="btn small manual-btn" href="#mailTemplateSection">Mail Template</a>
+        <a class="btn small manual-btn" href="#todayCommandSection">Today Command</a>
+        <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
+      </div>
+    </div>
+    <div class="alert-wrap" id="exceptionQueueList">
+      <div class="eq-item sev-info">
+        <div><span class="eq-tag info">WAIT</span><div class="eq-no" style="margin-top:4px">-</div></div>
+        <div class="eq-item-body"><strong>例外検出待機中</strong><p>CSVを読み込むか、新規DBを作成すると例外がここに表示されます。</p></div>
+        <div></div>
+      </div>
+    </div>
   </section>
 
+  <!-- ===== ROW 6: Mail Template (全幅) ===== -->
+  <section class="panel" id="mailTemplateSection">
+    <div class="corner-label">Mail Template</div>
+    <div class="panel-head">
+      <div>
+        <h2>Mail Template</h2>
+        <p>研修会レコードを選択し、用途タブを選ぶとメール文面を自動生成します。</p>
+      </div>
+      <div class="panel-nav-actions">
+        <a class="btn small manual-btn" href="#exceptionQueueSection">Exception Queue</a>
+        <a class="btn small manual-btn" href="#todayCommandSection">Today Command</a>
+        <a class="btn small manual-btn" href="#topControlPanel">Dual Theme Control UI</a>
+      </div>
+    </div>
 
-  <section class="task-main-grid">
-      <section class="dual-grid task-sub-grid">
+    <!-- hidden selects for JS compatibility -->
+    <select id="mailRecipient" style="display:none">
+      <option value="">宛先を選択</option>
+      <option value="speaker">講師</option>
+      <option value="cohost">共催・関係者</option>
+    </select>
+    <select id="mailPurpose" style="display:none">
+      <option value="">用途を選択してください</option>
+      <option value="ishi_req">依頼状送付（講師・開催5W前）</option>
+      <option value="hp_report_speaker">HP掲載報告+資料依頼（講師・HP掲載当日）</option>
+      <option value="data_reminder_speaker">資料提出リマインド（講師・開催2W前）</option>
+      <option value="honban_reminder_speaker">本番前リマインド（講師・開催1W前）</option>
+      <option value="shakin_transfer">謝金振込通知（講師・開催7日以内）</option>
+      <option value="hp_upload_req">HP予約投稿依頼（関係者・HP掲載1W前）</option>
+      <option value="hp_done_report">HP掲載完了報告①（関係者・HP掲載1W前）</option>
+      <option value="hp_done_report_day">HP掲載完了報告②（関係者・HP掲載当日）</option>
+      <option value="denshi_post_req">電子カルテ掲載依頼（関係者・HP掲載当日）</option>
+      <option value="denshi_replace_req">電子カルテ差替依頼（関係者・開催1W前）</option>
+      <option value="shakin_proc_req">謝金支払手続依頼（関係者・開催翌〜3日）</option>
+      <option value="seminar_prep">研修会準備依頼（関係者・当日）</option>
+      <option value="jikan_gaizangyo">時間外勤務前申請（関係者・当日）</option>
+    </select>
+
+    <!-- 用途タブ（13種） -->
+    <div class="mail-tab-bar" id="mailTabBar">
+      <button class="mail-tab active" data-recipient="speaker" data-purpose="ishi_req" onclick="mailTabClick(this)">依頼状送付</button>
+      <button class="mail-tab" data-recipient="speaker" data-purpose="hp_report_speaker" onclick="mailTabClick(this)">HP掲載報告+資料依頼</button>
+      <button class="mail-tab" data-recipient="speaker" data-purpose="data_reminder_speaker" onclick="mailTabClick(this)">資料提出リマインド</button>
+      <button class="mail-tab" data-recipient="speaker" data-purpose="honban_reminder_speaker" onclick="mailTabClick(this)">本番前リマインド</button>
+      <button class="mail-tab" data-recipient="speaker" data-purpose="shakin_transfer" onclick="mailTabClick(this)">謝金振込通知</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="hp_upload_req" onclick="mailTabClick(this)">HP予約投稿依頼</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="hp_done_report" onclick="mailTabClick(this)">HP掲載完了報告①</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="hp_done_report_day" onclick="mailTabClick(this)">HP掲載完了報告②</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="denshi_post_req" onclick="mailTabClick(this)">電子カルテ掲載依頼</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="denshi_replace_req" onclick="mailTabClick(this)">電子カルテ差替依頼</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="shakin_proc_req" onclick="mailTabClick(this)">謝金支払手続依頼</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="seminar_prep" onclick="mailTabClick(this)">研修会準備依頼</button>
+      <button class="mail-tab" data-recipient="cohost" data-purpose="jikan_gaizangyo" onclick="mailTabClick(this)">時間外勤務前申請</button>
+    </div>
+
+    <!-- レコード選択行 -->
+    <div class="mail-select-row">
+      <div class="field">
+        <label>研修会No選択</label>
+        <select id="mailRecordSelect">
+          <option value="">Noを選択してください</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>生成ボタン</label>
+        <button class="btn primary" id="mailGenerateBtn">メール文面を生成</button>
+      </div>
+      <div class="field" style="align-self:end">
+        <button class="btn" id="mailCopyAllBtn">件名＋本文をコピー</button>
+      </div>
+    </div>
+
+    <!-- 不足情報警告 -->
+    <div class="mail-missing-warn" id="mailMissingWarn">
+      <strong>⚠ 不足情報：</strong><span id="mailMissingList"></span>
+    </div>
+
+    <!-- プレビューエリア -->
+    <div class="mail-preview" id="mailPreviewWrap" style="display:none">
+      <div class="field">
+        <label>件名</label>
+        <div class="mail-subject-row">
+          <input id="mailSubjectDisplay" type="text" readonly style="background:var(--panel2);cursor:text;user-select:text" placeholder="（メール生成後に表示）">
+          <button class="btn small" id="mailCopySubjectBtn">件名コピー</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>本文（直接編集可）</label>
+        <textarea id="mailBodyDisplay" rows="18" style="min-height:320px;font-family:inherit;line-height:1.7"></textarea>
+      </div>
+      <!-- GAS AIブラッシュアップ -->
+      <div class="gas-brushup-row">
+        <label>AI ブラッシュアップ（GAS経由・Gemini）</label>
+        <button class="btn small" id="mailBrushupBtn">AIブラッシュアップ実行</button>
+      </div>
+      <div class="status-box gas-status" id="gasBrushupStatus" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- ===== ROW 7: Commit Check + Export Result ===== -->
+  <div class="two-col-grid">
     <section class="panel">
       <div class="corner-label">Verify</div>
       <div class="panel-head">
@@ -1885,8 +2090,10 @@ label[for="templateFiles"] {
         <button class="btn primary" id="downloadBtn" disabled>更新CSVをダウンロード</button>
       </div>
     </section>
-      </section><!-- /task-sub-grid -->
-      <section class="panel" id="taskChecklistPanel">
+  </div><!-- /Commit+Export row -->
+
+  <!-- ===== ROW 8: Task Checklist (全幅) ===== -->
+  <section class="panel" id="taskChecklistPanel">
         <div class="corner-label">Task Checklist</div>
         <div class="panel-head">
           <div>
@@ -2151,8 +2358,7 @@ label[for="templateFiles"] {
         </div>
         <div class="hint-box">各タスクを完了したらチェックを入れてください。CSV保存時に状態が保持されます。</div>
         </div>
-      </section>
-  </section><!-- /task-main-grid -->
+  </section><!-- /taskChecklistPanel -->
 
   <section class="panel" id="templateInjectionSection">
     <div class="corner-label">Template Merge</div>
@@ -3387,27 +3593,43 @@ function collectDeadlineAlerts(){
 function renderAlerts(){
   if(!currentHeaders.length){
     els.alertList.innerHTML='<div class="alert-item"><div><span class="alert-tag">WAIT</span></div><div><strong>期限監視待機中</strong><p>CSVを読み込むと期限アラートがここに表示されます。</p></div><div class="mono">No data</div></div>';
+    renderTodayCommand();
+    renderExceptionQueue();
     return;
   }
   const alerts=collectDeadlineAlerts();
   if(!alerts.length){
     els.alertList.innerHTML='<div class="alert-item"><div><span class="alert-tag">CLEAR</span></div><div><strong>期限逼迫タスクなし</strong><p>現在、7日以内に期限が迫っているタスクはありません。</p></div><div class="mono">Stable</div></div>';
-    return;
+  } else {
+    els.alertList.innerHTML=alerts.map((a,i)=>{
+      const aid='alert-item-'+i;
+      const tag=a.diff===0?'TODAY':a.diff===1?'TOMORROW':`+${a.diff}D`;
+      return `<div class="alert-item" id="${aid}">
+        <div class="alert-item-tag-wrap">
+          <input type="checkbox" class="alert-check" onclick="alertCheckDone('${aid}',this.checked)" title="実施済みにする" />
+          <span class="alert-tag">${tag}</span>
+        </div>
+        <div class="alert-body"><strong>No.${esc(a.no)} / ${esc(a.title)}</strong><p>${esc(a.label)} : ${esc(a.raw||'-')}</p></div>
+        <div class="alert-meta mono">Task alert</div>
+      </div>`;
+    }).join('');
   }
-  els.alertList.innerHTML=alerts.map(a=>`<div class="alert-item"><div><span class="alert-tag">${a.diff===0?'TODAY':a.diff===1?'TOMORROW':`+${a.diff}D`}</span></div><div><strong>No.${esc(a.no)} / ${esc(a.title)}</strong><p>${esc(a.label)} : ${esc(a.raw||'-')}</p></div><div class="mono">Task alert</div></div>`).join('');
+  // Today Command / Exception Queue を常に同期
+  renderTodayCommand();
+  renderExceptionQueue();
 }
 
 function updateAnnualGauge(done,total,yearCount,soon,draftCount){
   const circumference=578;
   const ratio=total?Math.max(0,Math.min(1,done/total)):0;
   const offset=circumference-(circumference*ratio);
-  els.annualGauge.style.strokeDashoffset=String(offset);
-  els.annualGaugeText.textContent=`${Math.round(ratio*100)}%`;
-  els.annualGaugeSub.textContent=`${done} / ${total} Completed`;
-  els.paramYearCount.textContent=String(yearCount);
-  els.paramDoneCount.textContent=String(done);
-  els.paramSoonCount.textContent=String(soon);
-  els.paramDraftCount.textContent=String(draftCount);
+  if(els.annualGauge) els.annualGauge.style.strokeDashoffset=String(offset);
+  if(els.annualGaugeText) els.annualGaugeText.textContent=`${Math.round(ratio*100)}%`;
+  if(els.annualGaugeSub) els.annualGaugeSub.textContent=`${done} / ${total} Completed`;
+  if(els.paramYearCount) els.paramYearCount.textContent=String(yearCount);
+  if(els.paramDoneCount) els.paramDoneCount.textContent=String(done);
+  if(els.paramSoonCount) els.paramSoonCount.textContent=String(soon);
+  if(els.paramDraftCount) els.paramDraftCount.textContent=String(draftCount);
 }
 
 function renderStats(){
@@ -3463,6 +3685,8 @@ const yearCount = dataRows.filter(r => {
   els.roadmapBar.style.width = `${ratio}%`;
 
   updateAnnualGauge(done, total, yearCount, soon, draftCount);
+  // mailRecordSelect を常に同期
+  renderMailRecordOptions();
 }
 
 function renderConfirm(warns){
@@ -4030,12 +4254,16 @@ function renderTodayCommand(){
       }
       return `<button class="tc-btn primary" onclick="openMailTemplate('${esc(b.no||'')}','${esc(b.recipient||'')}','${esc(b.purpose||'')}')">${esc(b.label)}</button>`;
     }).join('');
-    return `<div class="tc-card urgency-${urgClass}">
+    const cardId='tc-card-'+idx;
+    return `<div class="tc-card urgency-${urgClass}" id="${cardId}">
       <div class="tc-card-head">
-        <div class="tc-card-left">
+        <div class="tc-card-check-row" onclick="tcToggleExpand('${cardId}')">
+          <input type="checkbox" class="tc-check" id="chk_${cardId}" onclick="event.stopPropagation();tcCheckDone('${cardId}',this.checked)" />
           <span class="tc-no-badge">No.${esc(cmd.no)}</span>
           <span class="tc-urgency-tag ${urgClass}">${urgLabel}</span>
           <span class="tc-title">${esc(cmd.title)}</span>
+          <span class="tc-done-label">完了済み</span>
+          <span class="tc-expand-hint">▼ 展開</span>
         </div>
       </div>
       <div class="tc-action"><i class="tc-action-icon">&#9654;</i>${esc(cmd.action)}</div>
@@ -4145,6 +4373,191 @@ function openMailTemplate(no, recipient, purpose){
   if(mailEl) mailEl.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.openMailTemplate=openMailTemplate;
+
+function tcCheckDone(cardId, checked){
+  const card=document.getElementById(cardId);
+  if(!card) return;
+  if(checked){
+    card.classList.add('done');
+    const hint=card.querySelector('.tc-expand-hint');
+    if(hint) hint.textContent='▼ 展開';
+  } else {
+    card.classList.remove('done');
+  }
+}
+function tcToggleExpand(cardId){
+  const card=document.getElementById(cardId);
+  if(!card) return;
+  if(!card.classList.contains('done')) return; // 未完了時は無効
+  // done状態でクリック→一時展開トグル
+  const isExpanded=card.classList.contains('tc-temp-expand');
+  card.classList.toggle('tc-temp-expand', !isExpanded);
+  const els=card.querySelectorAll('.tc-action,.tc-reason,.tc-btns');
+  els.forEach(el=>{
+    el.style.display=isExpanded?'':'flex';
+    if(el.classList.contains('tc-action')) el.style.display=isExpanded?'none':'flex';
+    if(el.classList.contains('tc-reason')) el.style.display=isExpanded?'none':'block';
+    if(el.classList.contains('tc-btns'))   el.style.display=isExpanded?'none':'flex';
+  });
+  const hint=card.querySelector('.tc-expand-hint');
+  if(hint) hint.textContent=isExpanded?'▼ 展開':'▲ 折畳む';
+}
+window.tcCheckDone=tcCheckDone;
+
+function alertCheckDone(aid, checked){
+  const item=document.getElementById(aid);
+  if(!item) return;
+  if(checked){
+    item.classList.add('done');
+    item.title='クリックで展開';
+    item.onclick=function(){ alertToggleExpand(aid); };
+  } else {
+    item.classList.remove('done');
+    item.onclick=null;
+    item.title='';
+  }
+}
+function alertToggleExpand(aid){
+  const item=document.getElementById(aid);
+  if(!item || !item.classList.contains('done')) return;
+  const body=item.querySelector('.alert-body');
+  const meta=item.querySelector('.alert-meta');
+  const isHidden=body&&body.style.display==='none';
+  if(body) body.style.display=isHidden?'':'none';
+  if(meta) meta.style.display=isHidden?'':'none';
+}
+window.alertCheckDone=alertCheckDone;
+
+// Mail Template タブ切替
+function mailTabClick(btn){
+  document.querySelectorAll('.mail-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const purpose=btn.dataset.purpose;
+  const recip=btn.dataset.recip||'speaker';
+  const pSel=document.getElementById('mailPurpose');
+  const rSel=document.getElementById('mailRecipient');
+  if(pSel) pSel.value=purpose;
+  if(rSel) rSel.value=recip;
+  if(document.getElementById('mailRecordSelect').value) generateMailTemplate();
+}
+window.mailTabClick=mailTabClick;
+
+// openMailTemplate 拡張 — タブも連動
+const _origOpenMail=openMailTemplate;
+openMailTemplate=function(no,recipient,purpose){
+  _origOpenMail(no,recipient,purpose);
+  // タブ同期
+  if(purpose){
+    document.querySelectorAll('.mail-tab').forEach(b=>{
+      b.classList.toggle('active', b.dataset.purpose===purpose);
+    });
+  }
+};
+
+// mailRecordSelect 変更時もタブ同期
+document.addEventListener('DOMContentLoaded',function(){
+  const rSel=document.getElementById('mailRecordSelect');
+  if(rSel) rSel.addEventListener('change',function(){
+    if(this.value) generateMailTemplate();
+  });
+  // ブラッシュアップボタン制御: メール生成後に表示
+  const origGenBtn=document.getElementById('mailGenerateBtn');
+  if(origGenBtn){
+    origGenBtn.addEventListener('click',function(){
+      setTimeout(()=>{
+        const brushBtn=document.getElementById('mailBrushupBtn');
+        const preview=document.getElementById('mailPreviewWrap');
+        if(brushBtn&&preview&&preview.style.display!=='none') brushBtn.style.display='';
+      },100);
+    });
+  }
+
+  // ブラッシュアップボタン
+  const brushBtn=document.getElementById('mailBrushupBtn');
+  if(brushBtn) brushBtn.addEventListener('click',runGasBrushup);
+
+  // brushupCopyBtn
+  const brushCopy=document.getElementById('brushupCopyBtn');
+  if(brushCopy) brushCopy.addEventListener('click',function(){
+    const t=document.getElementById('gasBrushupResult');
+    if(t) navigator.clipboard.writeText(t.value).then(()=>{
+      const orig=brushCopy.textContent; brushCopy.textContent='コピー完了';
+      setTimeout(()=>{ brushCopy.textContent=orig; },1600);
+    });
+  });
+
+  // brushupApplyBtn — ブラッシュアップ結果を本文エリアに反映
+  const applyBtn=document.getElementById('brushupApplyBtn');
+  if(applyBtn) applyBtn.addEventListener('click',function(){
+    const src=document.getElementById('gasBrushupResult');
+    const dst=document.getElementById('mailBodyDisplay');
+    if(src&&dst){ dst.value=src.value; dst.removeAttribute('readonly'); }
+  });
+});
+
+// GAS ブラッシュアップ実行
+const GAS_BRUSHUP_URL='https://script.google.com/macros/s/AKfycbwFGWXonRPSDqhToxurlrxmvb0oMydOdM18_2Jy5aQWDXP60o6bKjkjYYfu741dgkqB/exec';
+
+async function runGasBrushup(){
+  const subjectEl=document.getElementById('mailSubjectDisplay');
+  const bodyEl=document.getElementById('mailBodyDisplay');
+  const statusEl=document.getElementById('gasBrushupStatus');
+  function setBrushupStatus(msg,color){
+    if(!statusEl) return;
+    statusEl.textContent=msg;
+    statusEl.style.display=msg?'block':'none';
+    statusEl.style.color=color||'';
+  }
+  if(!bodyEl||!bodyEl.value.trim()){
+    setBrushupStatus('メールを先に生成してください。','var(--warn)'); return;
+  }
+  const brushBtn=document.getElementById('mailBrushupBtn');
+  if(brushBtn){ brushBtn.disabled=true; brushBtn.textContent='処理中...'; }
+  setBrushupStatus('AI ブラッシュアップ中... しばらくお待ちください。');
+
+  const subject=(subjectEl?subjectEl.value||subjectEl.textContent:'') || '（件名なし）';
+  const body=bodyEl.value;
+
+  const payload={ action:'brushup', subject:subject, body:body };
+
+  try{
+    // Content-Type: text/plain → シンプルリクエスト（プリフライトなし）
+    // GAS側は e.postData.contents で JSON 文字列を受け取る
+    const res=await fetch(GAS_BRUSHUP_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.text();
+    console.log('[GAS brushup raw response]', raw);
+    let data={};
+    try{ data=JSON.parse(raw); }catch(pe){ throw new Error('GASレスポンスのJSONパース失敗: '+raw.slice(0,120)); }
+    // GAS doPost が返す可能性のあるキーを幅広く受け取る
+    const brushed=data.brushedBody||data.result||data.body||data.text||data.content||
+      (data.output&&typeof data.output==='string'?data.output:null)||
+      (Object.values(data).find(v=>typeof v==='string'&&v.length>20)||null);
+    if(!brushed){
+      // デバッグ用: GASが返したキー一覧をステータスに表示
+      const keys=Object.keys(data).join(', ')||'(キーなし)';
+      throw new Error('GASレスポンスに本文キーが見つかりません。返却キー: '+keys+' / raw: '+raw.slice(0,80));
+    }
+    if(bodyEl){ bodyEl.value=brushed; bodyEl.removeAttribute('readonly'); }
+    setBrushupStatus('✓ AIブラッシュアップ完了。本文を更新しました。','var(--green)');
+    setTimeout(()=>setBrushupStatus(''),6000);
+  }catch(e){
+    setBrushupStatus('GAS接続エラー: '+e.message,'var(--danger)');
+    console.error('runGasBrushup error:', e);
+  }finally{
+    if(brushBtn){ brushBtn.disabled=false; brushBtn.textContent='AIブラッシュアップ実行'; }
+  }
+}
+window.runGasBrushup=runGasBrushup;
+
+window.alertToggleExpand=alertToggleExpand;
+
+window.tcToggleExpand=tcToggleExpand;
+
 
 function selectRecordByNo(no){
   const sel=document.getElementById('recordSelect');
@@ -4305,7 +4718,7 @@ function generateMailTemplate(){
 
   const subjectEl=document.getElementById('mailSubjectDisplay');
   const bodyEl=document.getElementById('mailBodyDisplay');
-  if(subjectEl) subjectEl.textContent=subj;
+  if(subjectEl) subjectEl.value=subj;
   if(bodyEl){ bodyEl.value=body; bodyEl.removeAttribute('readonly'); }
   if(preview) preview.style.display='';
 }
@@ -4317,7 +4730,7 @@ document.addEventListener('DOMContentLoaded',function(){
   const copySubjectBtn=document.getElementById('mailCopySubjectBtn');
   if(copySubjectBtn) copySubjectBtn.addEventListener('click',function(){
     const t=document.getElementById('mailSubjectDisplay');
-    if(t) navigator.clipboard.writeText(t.textContent).then(()=>{
+    if(t) navigator.clipboard.writeText(t.value||t.textContent||'').then(()=>{
       const orig=copySubjectBtn.textContent; copySubjectBtn.textContent='コピー完了';
       setTimeout(()=>{ copySubjectBtn.textContent=orig; },1600);
     });
@@ -4328,7 +4741,7 @@ document.addEventListener('DOMContentLoaded',function(){
     const s=document.getElementById('mailSubjectDisplay');
     const b=document.getElementById('mailBodyDisplay');
     if(s&&b){
-      const text=`件名: ${s.textContent}\n\n${b.value}`;
+      const text=`件名: ${s.value||s.textContent||''}\n\n${b.value}`;
       navigator.clipboard.writeText(text).then(()=>{
         const orig=copyAllBtn.textContent; copyAllBtn.textContent='コピー完了';
         setTimeout(()=>{ copyAllBtn.textContent=orig; },1600);
@@ -4356,18 +4769,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(purposeSel) purposeSel.addEventListener('change',function(){ if(document.getElementById('mailRecordSelect').value) generateMailTemplate(); });
 });
 
-// renderAlerts / renderStats フックへの接続
-const _origRenderAlerts = renderAlerts;
-renderAlerts = function(){
-  _origRenderAlerts();
-  renderTodayCommand();
-  renderExceptionQueue();
-};
-const _origRenderStats = renderStats;
-renderStats = function(){
-  _origRenderStats();
-  renderMailRecordOptions();
-};
+// renderAlerts / renderStats: Today Command・ExceptionQueue・mailRecordSelect は各関数本体に統合済み
 
 // ダミーデータ挿入
 function loadDummyData(){
@@ -4436,5 +4838,333 @@ window.loadDummyData=loadDummyData;
 
 
 </script>
-</body>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>
