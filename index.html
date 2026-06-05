@@ -1283,16 +1283,62 @@ label[for="templateFiles"] {
   .mail-controls{grid-template-columns:1fr}
 }
 
+
+/* Today Command + Quick Operation 横並びグリッド */
+.tc-qo-grid{
+  display:grid;
+  grid-template-columns:1fr 420px;
+  gap:20px;
+  align-items:start;
+}
+@media(max-width:1100px){.tc-qo-grid{grid-template-columns:1fr}}
+
+/* Sender Info Panel */
+.sender-info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+@media(max-width:680px){.sender-info-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <canvas id="bgCodeCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
 <div class="scanline"></div>
 <div class="wrap">
+  <!-- =====================================================
+    SENDER INFO PANEL（差出人情報入力）
+    ===================================================== -->
+  <section class="panel" id="senderInfoSection">
+    <div class="corner-label">Sender Info</div>
+    <div class="panel-head">
+      <div>
+        <h2>差出人情報</h2>
+        <p>メールの冒頭「○○の○○でございます。」と末尾のシグネチャーに反映されます。入力後は自動保存されます。</p>
+      </div>
+    </div>
+    <div class="sender-info-grid">
+      <div class="field">
+        <label>所属・部署名</label>
+        <input type="text" id="senderOrg" placeholder="例：静岡がんセンター 臨床研究支援センター" />
+      </div>
+      <div class="field">
+        <label>担当者名</label>
+        <input type="text" id="senderName" placeholder="例：森川 太郎" />
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label>シグネチャー（＊＊＊に挟まれた部分のみ入力）</label>
+        <textarea id="senderSignature" rows="6" style="min-height:120px" placeholder="例：静岡がんセンター 臨床研究支援センター&#10;臨床研究管理・調整室&#10;森川 太郎&#10;TEL: 055-989-XXXX&#10;Email: t.morikawa@scchr.jp"></textarea>
+      </div>
+    </div>
+  </section>
+
+
 
 <!-- =====================================================
   TODAY COMMAND SECTION (最上部追加パネル)
   ===================================================== -->
+  <div class="tc-qo-grid">
   <section class="panel" id="todayCommandSection">
     <div class="corner-label">Today Command</div>
     <div class="panel-head">
@@ -1314,7 +1360,38 @@ label[for="templateFiles"] {
     </div>
   </section>
 
-  <!-- =====================================================
+
+  <section class="panel command-panel">
+    <div class="corner-label">Operation Console</div>
+    <div class="panel-head">
+        <div>
+          <h2>Quick Operation</h2>
+          <p>テーマ切替を含む主要操作を右上に集約しています。</p>
+        </div>
+      </div>
+    <button class="btn" id="themeBtn">表示テーマ切替</button>
+    <div class="file-pick">
+  <label for="csvFile" class="btn">CSV 選択</label>
+  <input id="csvFile" type="file" accept=".csv,text/csv">
+  <input id="csvFileName" value="" readonly placeholder="ファイル未選択">
+</div>
+    <div class="action-grid">
+        <button class="btn" id="newDbBtn">新規DB作成</button>
+        <button class="btn" id="dummyDataBtn" onclick="loadDummyData()">ダミーデータ読込</button>
+        <button class="btn primary" id="openConfirmBtn" style="grid-column:1/-1">入力画面に進む</button>
+      </div>
+    <select class="btn" id="recordSelect" disabled>
+        <option value="">Noを選択して表示</option>
+      </select>
+    <div class="mini-grid">
+        <div class="mini-box"><span>Database</span><b id="miniDbState">CSV未読込</b><p id="miniDbText">CSVまたは新規DBを選択してください</p></div>
+        <div class="mini-box"><span>Next</span><b id="miniNext">-</b><p>次回採番候補</p></div>
+        <div class="mini-box"><span>Year Count</span><b id="miniYearCount">0</b><p>当年度登録件数</p></div>
+      </div>
+    </section>
+  </div><!-- /tc-qo-grid -->
+
+    <!-- =====================================================
     EXCEPTION QUEUE SECTION
     ===================================================== -->
   <section class="panel" id="exceptionQueueSection">
@@ -1365,22 +1442,29 @@ label[for="templateFiles"] {
           <label>宛先</label>
           <select id="mailRecipient">
             <option value="speaker">講師向け</option>
-            <option value="cohost">共催・関係部署向け</option>
-            <option value="attendee">参加者向け</option>
-            <option value="noresponse">未提出者向け</option>
+            <option value="cohost">関係者向け</option>
           </select>
         </div>
         <div class="field">
           <label>用途</label>
           <select id="mailPurpose">
-            <option value="invitation">登壇依頼</option>
-            <option value="announce">開催案内</option>
-            <option value="reminder">開催直前リマインド</option>
-            <option value="data_request">資料提出依頼</option>
-            <option value="zoom_info">Zoom情報案内</option>
-            <option value="thanks">開催後お礼</option>
-            <option value="postprocess">修了後対応依頼</option>
-            <option value="no_reply">未回答催促</option>
+            <optgroup label="--- 講師向け ---">
+              <option value="ishi_req">【依頼状送付】(講師)開催5週間前</option>
+              <option value="hp_report_speaker">【HP掲載報告+資料依頼】(講師)HP掲載当日</option>
+              <option value="data_reminder_speaker">【資料提出リマインド】(講師)開催2週間前</option>
+              <option value="honban_reminder_speaker">【本番前リマインド】(講師)開催1週間前</option>
+              <option value="shakin_transfer">【謝金振込通知】(講師)開催7日以内</option>
+            </optgroup>
+            <optgroup label="--- 関係者向け ---">
+              <option value="hp_upload_req">【HP予約投稿依頼】(関係者)HP掲載1週間前</option>
+              <option value="hp_done_report">【HP掲載完了報告】(関係者)HP掲載1週間前</option>
+              <option value="hp_done_report_day">【HP掲載完了報告】(関係者)HP掲載当日</option>
+              <option value="denshi_post_req">【電子カルテ掲載依頼】(関係者)HP掲載当日</option>
+              <option value="denshi_replace_req">【電子カルテ差替依頼】(関係者)開催1週間前</option>
+              <option value="shakin_proc_req">【謝金支払手続依頼】(関係者)開催翌日〜3日</option>
+              <option value="seminar_prep">【研修会準備依頼】(関係者)当日</option>
+              <option value="jikan_gaizangyo">【時間外勤務前申請】(関係者)当日</option>
+            </optgroup>
           </select>
         </div>
         <div class="field" style="align-self:end">
@@ -1433,6 +1517,7 @@ label[for="templateFiles"] {
           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/kenshukai-notion-csv-generator.html" target="_blank" rel="noopener noreferrer">申込者管理</a>
           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/attend.html" target="_blank" rel="noopener noreferrer">受講者管理</a>
           <a class="btn manual-btn" href="https://morikawa001.github.io/seminar/license.html" target="_blank" rel="noopener noreferrer">受講証交付</a>
+          <a class="btn manual-btn" href="#senderInfoSection">差出人情報</a>
           <a class="btn manual-btn" href="#todayCommandSection">Today Command</a>
           <a class="btn manual-btn" href="#exceptionQueueSection">Exception Queue</a>
           <a class="btn manual-btn" href="#mailTemplateSection">Mail Template</a>
@@ -1449,34 +1534,6 @@ label[for="templateFiles"] {
       </div>
     </section>
 
-    <section class="panel command-panel">
-      <div class="corner-label">Operation Console</div>
-      <div class="panel-head">
-        <div>
-          <h2>Quick Operation</h2>
-          <p>テーマ切替を含む主要操作を右上に集約しています。</p>
-        </div>
-      </div>
-      <button class="btn" id="themeBtn">表示テーマ切替</button>
-      <div class="file-pick">
-  <label for="csvFile" class="btn">CSV 選択</label>
-  <input id="csvFile" type="file" accept=".csv,text/csv">
-  <input id="csvFileName" value="" readonly placeholder="ファイル未選択">
-</div>
-      <div class="action-grid">
-        <button class="btn" id="newDbBtn">新規DB作成</button>
-        <button class="btn" id="dummyDataBtn" onclick="loadDummyData()">ダミーデータ読込</button>
-        <button class="btn primary" id="openConfirmBtn">入力画面に進む</button>
-      </div>
-      <select class="btn" id="recordSelect" disabled>
-        <option value="">Noを選択して表示</option>
-      </select>
-      <div class="mini-grid">
-        <div class="mini-box"><span>Database</span><b id="miniDbState">CSV未読込</b><p id="miniDbText">CSVまたは新規DBを選択してください</p></div>
-        <div class="mini-box"><span>Next</span><b id="miniNext">-</b><p>次回採番候補</p></div>
-        <div class="mini-box"><span>Year Count</span><b id="miniYearCount">0</b><p>当年度登録件数</p></div>
-      </div>
-    </section>
   </section>
 
   <section class="dual-grid">
@@ -2334,8 +2391,8 @@ const fullKeys={
 
 const els={
   csvFile:document.getElementById('csvFile'),
-　csvFileName:document.getElementById('csvFileName'),
-　newDbBtn:document.getElementById('newDbBtn'),
+  csvFileName:document.getElementById('csvFileName'),
+  newDbBtn:document.getElementById('newDbBtn'),
   recordSelect:document.getElementById('recordSelect'),
   openConfirmBtn:document.getElementById('openConfirmBtn'),
   appendBtn:document.getElementById('appendBtn'),
@@ -4113,16 +4170,23 @@ function generateMailTemplate(){
     return;
   }
 
+  // 差出人情報取得
+  const senderOrg=(document.getElementById('senderOrg')||{value:''}).value.trim()||'○○';
+  const senderName=(document.getElementById('senderName')||{value:''}).value.trim()||'○○';
+  const senderSig=(document.getElementById('senderSignature')||{value:''}).value.trim()||'シグネチャー';
+
+  const sigBlock=`\n研修会担当　${senderName}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n${senderSig}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊`;
+
+  // フィールド取得ヘルパー
+  const fv=k=>String(row[fullKeys[k]]||'').trim();
+
   // 必須チェック
   const missing=[];
-  const fv=k=>String(row[fullKeys[k]]||'').trim();
   if(!fv('title')) missing.push('タイトル');
   if(!fv('date')) missing.push('開催日');
-  if(!fv('speaker')&&(recipient==='speaker')) missing.push('講師名');
-  const isZoomNeeded=(purpose==='zoom_info'||purpose==='reminder'||purpose==='announce');
+  const isZoomNeeded=['denshi_post_req','denshi_replace_req','honban_reminder_speaker'].includes(purpose);
   const zUrl=fv('zoomUrl');
   if(isZoomNeeded&&(!zUrl||zUrl==='https://zoom.us/')) missing.push('Zoom URL');
-
   if(missing.length){
     if(warn){ warn.style.display=''; missingList.textContent=missing.join('、')+'が不足しています。'; }
   } else {
@@ -4131,8 +4195,10 @@ function generateMailTemplate(){
 
   // 変数収集
   const title=fv('title')||'（研修会タイトル）';
-  const date=fv('date')||'（開催日）';
-  const dateStr=row[fullKeys.date2]||date;
+  const year=fv('year')||'2026年';
+  const yearNum=String(year).match(/(\d{4})/)?.[1]||'2026';
+  const dateStr=fv('date')||'（開催日）';
+  const day=fv('day')||'（曜）';
   const start=fv('start')||'17:30';
   const end=fv('end')||'19:00';
   const speaker=fv('speaker')||'（講師名）';
@@ -4140,76 +4206,101 @@ function generateMailTemplate(){
   const zoomId=fv('zoomId')||'（Zoom ID）';
   const passcode=fv('passcode')||'（パスコード）';
   const hpUrl=fv('hpUrl')||'（HP URL）';
-  const deadline1=fv('deadline1')||'（申込締切）';
+  const deadline2=fv('deadline2')||'（当日申込締切時刻）';
   const dataDeadline=fv('dataDeadline')||'（資料提出締切）';
-  const subject1=fv('subject')||'研究者';
-  const year=fv('year')||'2026年度';
-  const yearNum=String(year).match(/(\d{4})/)?.[1]||'2026';
-  const name=fv('name')||'（担当者名）';
-  const cohost=fv('cohost')||'なし';
-  const isCohost=cohost&&cohost!=='なし';
+  const date2=fv('date2')||dateStr;
+  const head1=`${yearNum}年度　臨床研究研修会`;
+  // PRE_MEETING（開始30分前）
+  function subtractMin(timeStr, mins){
+    const m=timeStr.match(/^(\d{1,2}):(\d{2})$/);
+    if(!m) return timeStr;
+    let total=parseInt(m[1])*60+parseInt(m[2])-mins;
+    if(total<0) total+=1440;
+    return String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');
+  }
+  const preMeeting=subtractMin(start,30);
+  // 講義開始・QA時刻はEntry Consoleに該当フィールドがない場合は計算値を使う
+  const lectureStart=fv('lectureStart')||subtractMin(end,50)||start;
+  const qaTime=subtractMin(end,15)||end;
 
   let subj='',body='';
-  const sig=`\n\n---\n${yearNum}年度 静岡がんセンター 臨床研究支援センター\n臨床研究管理・調整室\n${name}\n`;
 
+  // ============================================================
   // 講師向け
-  if(recipient==='speaker'){
-    if(purpose==='invitation'){
-      subj=`【登壇依頼】${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」`;
-      body=`${speaker} 先生\n\nお世話になっております。静岡がんセンター 臨床研究支援センター ${name}と申します。\n\n来る${date}（${start}〜${end}）に開催予定の${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」にご登壇いただけますようお願い申し上げます。\n\n研修会の詳細につきましては、追ってご案内いたします。\nご都合をお聞かせいただけますと幸いです。\n\nどうぞよろしくお願いいたします。${sig}`;
-    } else if(purpose==='data_request'){
-  subj=`【静岡がんセンター】臨床研究研修会 ${date}について`;
-  body=`${speaker} 先生\n\n平素より大変お世話になっております。\n○○の○○でございます。\nお忙しいところ、研修会準備にご協力くださり誠にありがとうございます。\n\n${date}に予定されている研修会が近づいておりますので、\n以下についてお知らせいたします。\n \n【講義資料について】\n${dataDeadline}（講演日1週間前）までに、講演資料のご作成・ご提供をお願い致します。\n \n＜タイトル＞\n　${yearNum}年度 静岡がんセンター臨床研究研修会\n　「${title}」\n \n今後とも、ご指導ご鞭撻の程よろしくお願いいたします。${sig}`;
-    }
+  // ============================================================
+  if(purpose==='ishi_req'){
+    // 11: 開催日の5週間前 依頼状送付
+    subj=`【静岡がんセンター】臨床研究研修会${dateStr}_ご依頼状提出について`;
+    body=`${speaker} 先生\n\n平素より大変お世話になっております。${senderOrg}の${senderName}でございます。ご多忙のところ研修会の準備にご協力くださり、誠にありがとうございます。\n\nさて、ご講演のご依頼状につきまして、当院内の手続きが完了いたしましたので、PDFを添付のうえ送付申し上げます。ご査収のほどよろしくお願いいたします。\n\n当院のホームページにてご講演の案内を公開しましたら、改めてご報告させていただきます。\n\n引き続き、どうぞよろしくお願い申し上げます。${sigBlock}`;
   }
-  // 共催・関係部署向け
-  else if(recipient==='cohost'){
-    const cohostName=isCohost?cohost:'関係部署';
-    if(purpose==='announce'){
-      subj=`【研修会開催案内】${date} 臨床研究研修会「${title}」（共催）`;
-      body=`${cohostName} ご担当者様\n\nお世話になっております。\n○○の○○でございます。\n\n下記の研修会を共催にて開催いたします。よろしくお願いいたします。\n\n■ 研修会概要\n・テーマ: ${title}\n・開催日時: ${date} ${start}〜${end}\n・対象: ${subject1}\n・開催方法: Web会議（Zoom）\n・Zoom URL: ${zoomUrl}\n・ID: ${zoomId} / パスコード: ${passcode}\n\nHP掲載URL: ${hpUrl}\n\n受付締切: ${deadline1}\n\nよろしくお願いいたします。${sig}`;
-    } else if(purpose==='postprocess'){
-      subj=`【修了後対応依頼】${date} 臨床研究研修会「${title}」`;
-      body=`${cohostName} ご担当者様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}開催の研修会「${title}」の修了後対応について、ご協力をお願いいたします。\n\n参加者データの提供、謝金処理等についてご連絡いたします。\n詳細については別途ご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
-    } else {
-      subj=`【研修会ご連絡（共催）】${date} 「${title}」`;
-      body=`${cohostName} ご担当者様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
-    }
+  else if(purpose==='hp_report_speaker'){
+    // 3 or 6: HP掲載当日 講師への掲載報告+資料依頼
+    subj=`【静岡がんセンター】臨床研究研修会${dateStr}_ご案内開始についてご報告`;
+    body=`${speaker} 先生\n\n平素より大変お世話になっております。${senderOrg}　臨床研究研修会担当の${senderName}でございます。お忙しいところ、研修会準備にご協力くださり誠にありがとうございます。\n\n${dateStr}（${day}）開催の研修会のお知らせにつきまして、当センターのホームページにてご講演内容のご案内を開始させていただきましたので、ご連絡させていただきます。ホームページに掲載の研修会のご案内も本メールに添付させていただきました。\n\n静岡がんセンターホームページURL\n${hpUrl}\n\n講義資料について\n${dataDeadline}（講演日1週間前）までに、講演資料のご作成・ご提供をお願い致します。\n\n＜タイトル＞\n${head1}「${title}」\n\n今後とも、ご指導ご鞭撻の程よろしくお願いいたします。${sigBlock}`;
   }
-  // 参加者向け
-  else if(recipient==='attendee'){
-    if(purpose==='announce'){
-      subj=`【開催案内】${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」`;
-      body=`関係者各位\n\nいつもお世話になっております。\n○○の○○でございます。\n\n${yearNum}年度 静岡がんセンター臨床研究研修会のご案内をお送りします。\n\n■ 研修会概要\n・テーマ: ${title}\n・開催日時: ${date}（${start}〜${end}）\n・講師: ${speaker} 先生\n・対象: ${subject1}\n・開催方法: Web会議（Zoom）\n\n■ 申込\n・申込締切: ${deadline1}\n・HP: ${hpUrl}\n\nご参加をお待ちしております。\n\nよろしくお願いいたします。${sig}`;
-    } else if(purpose==='reminder'){
-      subj=`【開催直前リマインド】${date} 臨床研究研修会「${title}」`;
-      body=`${title} 受講者の皆様\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会が間もなく開催となります。\n以下のZoom情報よりご参加ください。\n\n■ Zoom接続情報\n・開催日時: ${date} ${start}〜${end}\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\n・入室開始: ${start.replace(/(\d+):(\d+)/,(_,h,m)=>`${String(parseInt(h)*60+parseInt(m)-5).slice(0,2)}:${m}`)}頃\n\nどうぞよろしくお願いいたします。${sig}`;
-    } else if(purpose==='zoom_info'){
-      subj=`【Zoom情報】${date} 臨床研究研修会「${title}」`;
-      body=`${title} 受講者の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}（${start}〜${end}）開催の研修会のZoom情報をご案内いたします。\n\n■ Zoom接続情報\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\nよろしくお願いいたします。${sig}`;
-    } else if(purpose==='thanks'){
-      subj=`【御礼】${date} 臨床研究研修会「${title}」にご参加いただきありがとうございました`;
-      body=`ご参加の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}に開催の研修会「${title}」にご参加いただき、誠にありがとうございました。\n\n受講証の発行につきましては、別途ご案内いたします。\n\nよろしくお願いいたします。${sig}`;
-    } else if(purpose==='postprocess'){
-      subj=`【修了後対応のご案内】臨床研究研修会「${title}」`;
-      body=`ご参加の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}に開催の研修会「${title}」の修了後対応についてご案内いたします。\n\n受講証・修了証書の交付手続きが完了次第、別途メールにてお送りします。\n\nよろしくお願いいたします。${sig}`;
-    } else {
-      subj=`【研修会ご連絡】${date} 「${title}」`;
-      body=`ご参加の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
-    }
+  else if(purpose==='data_reminder_speaker'){
+    // 8: 開催2週間前 講師リマインド（資料提出依頼）
+    subj=`【静岡がんセンター】臨床研究研修会 ${dateStr}について`;
+    body=`${speaker} 先生\n\n平素より大変お世話になっております。${senderOrg}　研修会担当の${senderName}でございます。お忙しいところ、研修会準備にご協力くださり誠にありがとうございます。\n\n${dateStr}（${day}）に予定されている研修会が近づいておりますので、以下についてお知らせいたします。\n\n【講義資料について】\n${dataDeadline}（講演日1週間前）までに、講演資料のご作成・ご提供をお願い致します。\n\n＜タイトル＞\n${head1}「${title}」\n\n今後とも、ご指導ご鞭撻の程よろしくお願いいたします。${sigBlock}`;
   }
-  // 未提出者向け
-  else if(recipient==='noresponse'){
-    if(purpose==='no_reply'){
-      subj=`【未回答催促】${date} 臨床研究研修会「${title}」 アンケートご回答のお願い`;
-      body=`ご参加の皆様\n\nお世話になっております。${name}です。\n\n${date}開催の研修会「${title}」のアンケートにつきまして、まだご回答をいただいていない方へのご連絡です。\n\n受講証の発行には、アンケートのご回答が必要となります。\nお手数ですが、下記リンクよりご回答いただきますようお願いいたします。\n\n（アンケートリンク）\n\nご不明な点がございましたら、お気軽にご連絡ください。\n\nよろしくお願いいたします。${sig}`;
-    } else if(purpose==='data_request'){
-      subj=`【資料未提出催促】${date} 臨床研究研修会「${title}」`;
-      body=`${speaker} 先生\n\nお世話になっております。${name}です。\n\n${date}開催の研修会「${title}」につきまして、講義資料のご提出がまだ確認できておりません。\n\n■ 資料提出締切\n${dataDeadline}\n\n締切まで残りわずかとなっております。ご確認の上、ご提出をよろしくお願いいたします。${sig}`;
-    } else {
-      subj=`【ご確認のお願い】${date} 「${title}」`;
-      body=`関係者各位\n\nお世話になっております。${name}です。\n\n${date}開催の研修会「${title}」につきまして、ご確認のお願いを申し上げます。\n\nよろしくお願いいたします。${sig}`;
-    }
+  else if(purpose==='honban_reminder_speaker'){
+    // 10: 開催1週間前 本番前リマインド
+    subj=`【静岡がんセンター】臨床研究研修会${dateStr}について`;
+    body=`${speaker} 先生\n\n平素より大変お世話になっております。\n${senderOrg}　臨床研究研修会担当の${senderName}でございます。\nお忙しい中、ご講演の準備にご協力いただき、誠にありがとうございます。\n\nご講演予定日が近づいてまいりましたので、改めてご案内申し上げます。\n当日の進行表およびウェビナー操作資料を添付いたしましたので、ご参照いただけますと幸いです。\n\n進行については、以下のスケジュールを予定しております。\n\n＜当日の進行＞\n${preMeeting}〜${start}（終了後、待機）　事前接続（練習セッション）\n${start}〜　司会挨拶\n${lectureStart}〜　講義\n${qaTime}〜　質疑応答\n〜${end}　司会挨拶\n\n＜先生ご招待URL＞\n${zoomUrl}\n\nご多忙のところ、大変恐縮ですが、よろしくお願い申し上げます。${sigBlock}`;
+  }
+  else if(purpose==='shakin_transfer'){
+    // 9: 開催7日以内 謝金振込通知
+    subj=`【静岡がんセンター】ご講演謝金の振り込みについて`;
+    body=`${speaker} 先生\n\n平素より大変お世話になっております。${senderOrg}の${senderName}でございます。先日はお忙しい中、当院の臨床研究研修会にてご講演くださり誠にありがとうございました。\n\nさて、お謝金につきましては、XX月XX日（X）にご指定の口座へお振込みさせていただく予定でございます。お手すきの際にご確認いただけますと幸いです。\n\nなお、万が一お振込みが確認できない場合には、誠に恐れ入りますがご一報いただけますようお願い申し上げます。\n\n今後とも何卒よろしくお願い申し上げます。${sigBlock}`;
+  }
+
+  // ============================================================
+  // 関係者向け
+  // ============================================================
+  else if(purpose==='hp_upload_req'){
+    // 1: HP掲載1週間前 予約投稿依頼
+    subj=`【研修会】アップロード設定（予約投稿）のお願い`;
+    body=`マネジメントセンター○○ 様\n\nいつも大変お世話になっております。${senderOrg}　研修会担当の${senderName}でございます。以下について予約投稿設定をお願いいたします。\n\n＜予約投稿日＞\nXX月XX日（XX）13時〜\n\n＜タイトル＞\n＜研修会＞臨床研究研修会「${title}」${dateStr}（${day}）${start}〜開催のお知らせ\n\n＜研修会ページ＞\n${hpUrl}\n\nよろしくお願いいたします。${sigBlock}`;
+  }
+  else if(purpose==='hp_done_report'){
+    // 2: HP掲載1週間前 掲載完了報告（関係者）
+    subj=`【静岡がんセンター】臨床研究研修会${dateStr}_ご案内開始についてご報告`;
+    body=`皆様\n\nお忙しいところ失礼いたします。\n${senderOrg}　研修会担当の${senderName}でございます。\n\n以下の研修会案内がホームページにアップロードされましたので、ご報告させていただきます。\n講師の${speaker}にもご報告させていただきます。\n\n＜研修会＞\n日　時：${year}${dateStr}（${day}）${start}〜${end}\n演　題：「${title}」\n講　師：${speaker}\n\n${hpUrl}\n\nよろしくお願いいたします。${sigBlock}`;
+  }
+  else if(purpose==='hp_done_report_day'){
+    // 4: HP掲載当日 掲載完了報告（関係者）
+    subj=`【研修会】${dateStr}_ご案内開始についてご報告`;
+    body=`皆様\n\nお忙しいところ失礼いたします。研修会担当の${senderName}です。\n\n以下の研修会案内がホームページにアップロードされましたので、ご報告させていただきます。講師の${speaker}にもご報告させていただきます。\n\n＜研修会＞\n日　時：${year}${dateStr}（${day}）${start}〜${end}\n演　題：${title}\n講　師：${speaker}\n\n${hpUrl}\n\nよろしくお願いいたします。${sigBlock}`;
+  }
+  else if(purpose==='denshi_post_req'){
+    // 5: HP掲載当日 電子カルテ掲載依頼
+    subj=`【掲載依頼】(${date2}開催)臨床研究研修会開催のお知らせ`;
+    body=`情報システム課　御中\n\nお世話になっております。${senderOrg}の${senderName}と申します。お手数をおかけいたしますが、${dateStr}（${day}）まで、電子カルテの重要なお知らせ欄へ、以下のとおり掲載をお願いいたします。臨床研究研修会の開催は、特定臨床研究管理委員会やワーキングに諮っており、幹部の承諾を得ております。\n\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n${senderSig}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n\n（標　題）\n（${date2}開催）　臨床研究研修会開催のお知らせ　${start}から\n\n----------------------------------------------------------\n（本文）\n\n日　時：${year}${dateStr}（${day}）${start}〜${end}\n演　題：「${title}」\n講　師：${speaker}\n\n場所：オンライン研修会\n受講方法：当日オンライン受講（ZOOMウェビナー）\n\n添付ファイルのQRコードを読み取るか、以下URLからお申込みください。\n${zoomUrl}\n\n申込み〆切：${dateStr}（${day}）${deadline2}まで\n\n※本講義はオンラインでの聴講になります。\n別添のファイルにつきまして、お知らせへ添付いただきますようお願いいたします。\n\nお忙しいところ大変恐縮ですが、よろしくお願いいたします。\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n${senderSig}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊`;
+    // この用途は件名を本文の冒頭に含めないスタイルのため subj のみ
+  }
+  else if(purpose==='denshi_replace_req'){
+    // 7: 開催1週間前 電子カルテ差替依頼
+    subj=`【差替え掲載依頼】(${date2}開催)臨床研究研修会開催のお知らせ`;
+    body=`情報システム課　御中\n\nお世話になっております。${senderOrg}の${senderName}と申します。\n\nXX月XX日に掲載をお願いさせていただきました研修会開催のお知らせですが、${dateStr}開催分につきまして、別添のファイルへの差し替えをお願いできますでしょうか。\n\nお手数をおかけいたしますが、${dateStr}（${day}）まで、電子カルテの重要なお知らせ欄へ、以下のとおり掲載をお願いいたします。臨床研究研修会の開催は、特定臨床研究管理委員会やワーキングに諮っており、幹部の承諾を得ております。\n\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n${senderSig}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n\n（標　題）\n（${date2}開催間近）　臨床研究研修会開催のお知らせ　${start}から\n\n----------------------------------------------------------\n（本文）\n\n日　時：${year}${dateStr}（${day}）${start}〜${end}\n演　題：「${title}」\n講　師：${speaker}\n\n場所：オンライン研修会\n受講方法：当日オンライン受講（ZOOMウェビナー）\n\n添付ファイルのQRコードを読み取るか、以下URLからお申込みください。\n${zoomUrl}\n\n申込み〆切：${dateStr}（${day}）${deadline2}まで\n\n※本講義はオンラインでの聴講になります。\n別添のファイルにつきまして、お知らせへ添付いただきますようお願いいたします。\n\nお忙しいところ大変恐縮ですが、よろしくお願いいたします。\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n${senderSig}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊`;
+  }
+  else if(purpose==='shakin_proc_req'){
+    // 12: 開催翌日〜3日 謝金支払い手続き依頼（関係者）
+    subj=`【研修会】${dateStr}_謝金支払い手続きについて`;
+    body=`○○様\n\nお忙しいところ失礼いたします。研修会担当の${senderName}でございます。下段、研修会の謝金お支払い手続きについて、ご対応いただきたくお願いいたします。\n\n＜研修会＞\n日　時：${year}${dateStr}（${day}）${start}〜${end}\n演　題：「${title}」\n講　師：${speaker}\n\n今後とも、よろしくお願いいたします。${sigBlock}`;
+  }
+  else if(purpose==='seminar_prep'){
+    // 13: 当日 研修会準備依頼
+    subj=`【研修会準備】${dateStr}研修会準備について`;
+    body=`皆様\n\nお忙しい中、失礼いたします。研修会担当の${senderName}です。\n\n本日${dateStr}の研修会準備につきまして、下記のとおりご協力をお願い申し上げます。\n\n■ 準備開始　XX:XX頃から\n■ 事前打合せ　14:30\n■ 会場　管理棟4階　XXXXXXX\n\n■ 皆様ご都合がつきましたら、XX:XX頃よりご自席にて、音声および画像のモニタリングにご協力いただけますと幸いです。\n\n何卒よろしくお願いいたします。${sigBlock}`;
+  }
+  else if(purpose==='jikan_gaizangyo'){
+    // 14: 当日 時間外勤務前申請
+    subj=`【時間外勤務_前申請】${dateStr}○○`;
+    body=`□□様　△△様\n\nお忙しいところ失礼いたします。研修会担当の${senderName}です。\n\n本日の研修会運営について、以下の通り、時間外勤務の前申請をお願いいたします。\n\n【時間外勤務 前申請】\n■ ${dateStr}（${day}）${end}まで\n■ 研修会運営対応のため\n\n何卒よろしくお願いいたします。\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊\n${senderSig}\n＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊`;
+  }
+  else {
+    subj=`【研修会ご連絡】${dateStr} 「${title}」`;
+    body=`関係者各位\n\nお世話になっております。${senderOrg}の${senderName}でございます。\n\n${dateStr}（${day}）${start}〜${end}開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sigBlock}`;
   }
 
   const subjectEl=document.getElementById('mailSubjectDisplay');
