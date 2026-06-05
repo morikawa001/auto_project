@@ -4159,7 +4159,7 @@ function generateMailTemplate(){
       body=`${speaker} 先生\n\nお世話になっております。静岡がんセンター 臨床研究支援センター ${name}と申します。\n\n来る${date}（${start}〜${end}）に開催予定の${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」にご登壇いただけますようお願い申し上げます。\n\n研修会の詳細につきましては、追ってご案内いたします。\nご都合をお聞かせいただけますと幸いです。\n\nどうぞよろしくお願いいたします。${sig}`;
     } else if(purpose==='data_request'){
   subj=`【静岡がんセンター】臨床研究研修会 ${date}について`;
-  body=`${speaker} 先生\n\n平素より大変お世話になっております。\n○○の${name}でございます。\nお忙しいところ、研修会準備にご協力くださり誠にありがとうございます。\n\n${date}（${start}〜${end}）に予定されている研修会が近づいておりますので、\n以下についてお知らせいたします。\n \n【講義資料について】\n${dataDeadline}（講演日1週間前）までに、講演資料のご作成・ご提供をお願い致します。\n \n＜タイトル＞\n　${yearNum}年度 静岡がんセンター臨床研究研修会\n　「${title}」\n \n今後とも、ご指導ご鞭撻の程よろしくお願いいたします。\n臨床研究研修会\n担当　${name}${sig}`;
+  body=`${speaker} 先生\n\n平素より大変お世話になっております。\n○○の○○でございます。\nお忙しいところ、研修会準備にご協力くださり誠にありがとうございます。\n\n${date}に予定されている研修会が近づいておりますので、\n以下についてお知らせいたします。\n \n【講義資料について】\n${dataDeadline}（講演日1週間前）までに、講演資料のご作成・ご提供をお願い致します。\n \n＜タイトル＞\n　${yearNum}年度 静岡がんセンター臨床研究研修会\n　「${title}」\n \n今後とも、ご指導ご鞭撻の程よろしくお願いいたします。${sig}`;
     }
   }
   // 共催・関係部署向け
@@ -4167,35 +4167,35 @@ function generateMailTemplate(){
     const cohostName=isCohost?cohost:'関係部署';
     if(purpose==='announce'){
       subj=`【研修会開催案内】${date} 臨床研究研修会「${title}」（共催）`;
-      body=`${cohostName} ご担当者様\n\nお世話になっております。${name}です。\n\n下記の研修会を共催にて開催いたします。よろしくお願いいたします。\n\n■ 研修会概要\n・テーマ: ${title}\n・開催日時: ${date} ${start}〜${end}\n・対象: ${subject1}\n・開催方法: Web会議（Zoom）\n・Zoom URL: ${zoomUrl}\n・ID: ${zoomId} / パスコード: ${passcode}\n\nHP掲載URL: ${hpUrl}\n\n受付締切: ${deadline1}\n\nよろしくお願いいたします。${sig}`;
+      body=`${cohostName} ご担当者様\n\nお世話になっております。\n○○の○○でございます。\n\n下記の研修会を共催にて開催いたします。よろしくお願いいたします。\n\n■ 研修会概要\n・テーマ: ${title}\n・開催日時: ${date} ${start}〜${end}\n・対象: ${subject1}\n・開催方法: Web会議（Zoom）\n・Zoom URL: ${zoomUrl}\n・ID: ${zoomId} / パスコード: ${passcode}\n\nHP掲載URL: ${hpUrl}\n\n受付締切: ${deadline1}\n\nよろしくお願いいたします。${sig}`;
     } else if(purpose==='postprocess'){
       subj=`【修了後対応依頼】${date} 臨床研究研修会「${title}」`;
-      body=`${cohostName} ご担当者様\n\nお世話になっております。${name}です。\n\n${date}開催の研修会「${title}」の修了後対応について、ご協力をお願いいたします。\n\n参加者データの提供、謝金処理等についてご連絡いたします。\n詳細については別途ご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
+      body=`${cohostName} ご担当者様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}開催の研修会「${title}」の修了後対応について、ご協力をお願いいたします。\n\n参加者データの提供、謝金処理等についてご連絡いたします。\n詳細については別途ご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
     } else {
       subj=`【研修会ご連絡（共催）】${date} 「${title}」`;
-      body=`${cohostName} ご担当者様\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
+      body=`${cohostName} ご担当者様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
     }
   }
   // 参加者向け
   else if(recipient==='attendee'){
     if(purpose==='announce'){
       subj=`【開催案内】${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」`;
-      body=`関係者各位\n\nいつもお世話になっております。${name}です。\n\n${yearNum}年度 静岡がんセンター臨床研究研修会のご案内をお送りします。\n\n■ 研修会概要\n・テーマ: ${title}\n・開催日時: ${date}（${start}〜${end}）\n・講師: ${speaker} 先生\n・対象: ${subject1}\n・開催方法: Web会議（Zoom）\n\n■ 申込\n・申込締切: ${deadline1}\n・HP: ${hpUrl}\n\nご参加をお待ちしております。\n\nよろしくお願いいたします。${sig}`;
+      body=`関係者各位\n\nいつもお世話になっております。\n○○の○○でございます。\n\n${yearNum}年度 静岡がんセンター臨床研究研修会のご案内をお送りします。\n\n■ 研修会概要\n・テーマ: ${title}\n・開催日時: ${date}（${start}〜${end}）\n・講師: ${speaker} 先生\n・対象: ${subject1}\n・開催方法: Web会議（Zoom）\n\n■ 申込\n・申込締切: ${deadline1}\n・HP: ${hpUrl}\n\nご参加をお待ちしております。\n\nよろしくお願いいたします。${sig}`;
     } else if(purpose==='reminder'){
       subj=`【開催直前リマインド】${date} 臨床研究研修会「${title}」`;
       body=`${title} 受講者の皆様\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会が間もなく開催となります。\n以下のZoom情報よりご参加ください。\n\n■ Zoom接続情報\n・開催日時: ${date} ${start}〜${end}\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\n・入室開始: ${start.replace(/(\d+):(\d+)/,(_,h,m)=>`${String(parseInt(h)*60+parseInt(m)-5).slice(0,2)}:${m}`)}頃\n\nどうぞよろしくお願いいたします。${sig}`;
     } else if(purpose==='zoom_info'){
       subj=`【Zoom情報】${date} 臨床研究研修会「${title}」`;
-      body=`${title} 受講者の皆様\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会のZoom情報をご案内いたします。\n\n■ Zoom接続情報\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\nよろしくお願いいたします。${sig}`;
+      body=`${title} 受講者の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}（${start}〜${end}）開催の研修会のZoom情報をご案内いたします。\n\n■ Zoom接続情報\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\nよろしくお願いいたします。${sig}`;
     } else if(purpose==='thanks'){
       subj=`【御礼】${date} 臨床研究研修会「${title}」にご参加いただきありがとうございました`;
-      body=`ご参加の皆様\n\nお世話になっております。${name}です。\n\n${date}に開催の研修会「${title}」にご参加いただき、誠にありがとうございました。\n\n受講証の発行につきましては、別途ご案内いたします。\n\nよろしくお願いいたします。${sig}`;
+      body=`ご参加の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}に開催の研修会「${title}」にご参加いただき、誠にありがとうございました。\n\n受講証の発行につきましては、別途ご案内いたします。\n\nよろしくお願いいたします。${sig}`;
     } else if(purpose==='postprocess'){
       subj=`【修了後対応のご案内】臨床研究研修会「${title}」`;
-      body=`ご参加の皆様\n\nお世話になっております。${name}です。\n\n${date}に開催の研修会「${title}」の修了後対応についてご案内いたします。\n\n受講証・修了証書の交付手続きが完了次第、別途メールにてお送りします。\n\nよろしくお願いいたします。${sig}`;
+      body=`ご参加の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}に開催の研修会「${title}」の修了後対応についてご案内いたします。\n\n受講証・修了証書の交付手続きが完了次第、別途メールにてお送りします。\n\nよろしくお願いいたします。${sig}`;
     } else {
       subj=`【研修会ご連絡】${date} 「${title}」`;
-      body=`ご参加の皆様\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
+      body=`ご参加の皆様\n\nお世話になっております。\n○○の○○でございます。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
     }
   }
   // 未提出者向け
