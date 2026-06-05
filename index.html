@@ -4158,20 +4158,8 @@ function generateMailTemplate(){
       subj=`【登壇依頼】${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」`;
       body=`${speaker} 先生\n\nお世話になっております。静岡がんセンター 臨床研究支援センター ${name}と申します。\n\n来る${date}（${start}〜${end}）に開催予定の${yearNum}年度 静岡がんセンター臨床研究研修会「${title}」にご登壇いただけますようお願い申し上げます。\n\n研修会の詳細につきましては、追ってご案内いたします。\nご都合をお聞かせいただけますと幸いです。\n\nどうぞよろしくお願いいたします。${sig}`;
     } else if(purpose==='data_request'){
-      subj=`【資料提出依頼】${date} 臨床研究研修会「${title}」`;
-      body=`${speaker} 先生\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会「${title}」につきまして、講義資料のご提出をお願いいたします。\n\n■ 資料提出締切\n${dataDeadline}\n\n資料は電子メールにてご送付いただくか、共有フォルダへのアップロードをお願いいたします。\nご不明な点がございましたら、お気軽にお声がけください。\n\nよろしくお願いいたします。${sig}`;
-    } else if(purpose==='reminder'){
-      subj=`【開催直前リマインド】${date} 臨床研究研修会「${title}」`;
-      body=`${speaker} 先生\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会「${title}」が間もなく開催となります。\n\n■ Zoom情報\n・開催日時: ${date} ${start}〜${end}\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\n当日はどうぞよろしくお願いいたします。${sig}`;
-    } else if(purpose==='thanks'){
-      subj=`【お礼】${date} 臨床研究研修会「${title}」にご登壇いただきありがとうございました`;
-      body=`${speaker} 先生\n\nお世話になっております。${name}です。\n\n先日は「${title}」にご登壇いただき、誠にありがとうございました。\n先生のご講演は大変充実した内容で、参加者からも高い評価をいただいております。\n\n今後ともどうぞよろしくお願いいたします。${sig}`;
-    } else if(purpose==='zoom_info'){
-      subj=`【Zoom情報】${date} 臨床研究研修会「${title}」`;
-      body=`${speaker} 先生\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会「${title}」のZoom情報をお送りします。\n\n■ Zoom接続情報\n・Zoom URL: ${zoomUrl}\n・ミーティングID: ${zoomId}\n・パスコード: ${passcode}\n\nよろしくお願いいたします。${sig}`;
-    } else {
-      subj=`【研修会ご連絡】${date} 「${title}」`;
-      body=`${speaker} 先生\n\nお世話になっております。${name}です。\n\n${date}（${start}〜${end}）開催の研修会「${title}」についてご連絡いたします。\n\nよろしくお願いいたします。${sig}`;
+  subj=`【静岡がんセンター】臨床研究研修会 ${date}について`;
+  body=`${speaker} 先生\n\n平素より大変お世話になっております。\n○○の${name}でございます。\nお忙しいところ、研修会準備にご協力くださり誠にありがとうございます。\n\n${date}（${start}〜${end}）に予定されている研修会が近づいておりますので、\n以下についてお知らせいたします。\n \n【講義資料について】\n${dataDeadline}（講演日1週間前）までに、講演資料のご作成・ご提供をお願い致します。\n \n＜タイトル＞\n　${yearNum}年度 静岡がんセンター臨床研究研修会\n　「${title}」\n \n今後とも、ご指導ご鞭撻の程よろしくお願いいたします。\n臨床研究研修会\n担当　${name}${sig}`;
     }
   }
   // 共催・関係部署向け
